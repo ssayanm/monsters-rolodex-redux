@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { CardList } from './components/Card-List-Component';
 import { SearchBox } from './components/SearchBox-Component';
+import { connect } from 'react-redux';
+import { setSearchField } from './redux/actions';
 import './App.css';
 
 class App extends Component {
   constructor(){
     super();
     this.state ={
-      monsters: [],
-      searchField: ''
+      monsters: []
     }
   }
 
@@ -18,13 +19,10 @@ class App extends Component {
       .then(users => this.setState({monsters: users}))
   }
 
-  handleChange = (event) => {
-    this.setState({searchField: event.target.value})
-  }
-
+ 
   render(){
-    const { monsters, searchField } = this.state;
-    const filteredMonsters = monsters.filter(monster => 
+    const { onSearchChange, searchField } = this.props;
+    const filteredMonsters = this.state.monsters.filter(monster => 
       monster.name.toLowerCase().includes(searchField.toLowerCase())
     )
     return (
@@ -32,7 +30,7 @@ class App extends Component {
           <h1>Monsters Rolodex</h1>
         <SearchBox
           placeholder = 'Search Monsters'
-          handleChange = {this.handleChange}
+          onSearchChange = {onSearchChange}
         />
         <CardList monsters={filteredMonsters}/>
       </div>
@@ -40,4 +38,16 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    searchField: state.searchField
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -2,27 +2,32 @@ import React, { Component } from 'react';
 import { CardList } from './components/Card-List-Component';
 import { SearchBox } from './components/SearchBox-Component';
 import { connect } from 'react-redux';
-import { setSearchField } from './redux/actions';
+import { setSearchField } from './redux/search/search.action';
+import { requestMonsters } from './redux/monster/monster.action';
 import './App.css';
 
-class App extends Component {
-  constructor(){
-    super();
-    this.state ={
-      monsters: []
-    }
-  }
+const mapStateToProps = state => ({
+    searchField: state.search.searchField,
+    monsters: state.monster.monsters,
+    isPending: state.monster.isPending,
+    error: state.monster.error
+})
 
+const mapDispatchToProps = dispatch => ({
+    onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+    onRequestMonsters: () => dispatch(requestMonsters())
+
+})
+
+class App extends Component {
   componentDidMount(){
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(users => this.setState({monsters: users}))
+    this.props.onRequestMonsters();  
   }
 
  
   render(){
-    const { onSearchChange, searchField } = this.props;
-    const filteredMonsters = this.state.monsters.filter(monster => 
+    const { onSearchChange, searchField, monsters } = this.props;
+    const filteredMonsters = monsters.filter(monster => 
       monster.name.toLowerCase().includes(searchField.toLowerCase())
     )
     return (
@@ -38,16 +43,6 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    searchField: state.searchField
-  }
-}
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onSearchChange: (event) => dispatch(setSearchField(event.target.value))
-  }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

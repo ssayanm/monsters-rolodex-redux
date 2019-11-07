@@ -1,18 +1,9 @@
+import { combineReducers } from 'redux';
 
-const INITIAL_STATE = {
-    searchField: ''
-}
+import searchReducer from './search/search.reducer';
+import monsterReducer from './monster/monster.reducer';
 
-const rootReducer = (state = INITIAL_STATE, action) => {
-	switch (action.type) {
-		case 'CHANGE_SEARCH_FIELD':
-			return {
-				...state,
-				searchField: action.payload
-			}
-		default:
-			return state;
-	}
-}
-
-export default rootReducer;
+export default combineReducers({
+	search: searchReducer,
+	monster: monsterReducer
+})
